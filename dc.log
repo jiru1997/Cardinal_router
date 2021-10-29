@@ -1,0 +1,212 @@
+######################################################################
+#
+# EE-577b 2020 FALL
+# : DesignCompiler synthesis script
+#   modified by Linyi Hong
+#
+# use this script as a template for synthesizing combinational logic
+#
+######################################################################
+# Setting variable for design_name. (top module name)
+set design_name $env(DESIGN_NAME);
+DW01_add_inst
+## For NCSUFreePDK45nm library
+set search_path [ list .                   /home/scf-22/ee577/NCSU45PDK/FreePDK45/osu_soc/lib/files ]
+. /home/scf-22/ee577/NCSU45PDK/FreePDK45/osu_soc/lib/files
+set target_library { gscl45nm.db }
+ gscl45nm.db 
+set synthetic_library [list dw_foundation.sldb standard.sldb ]
+dw_foundation.sldb standard.sldb
+set link_library [list * gscl45nm.db dw_foundation.sldb standard.sldb]
+* gscl45nm.db dw_foundation.sldb standard.sldb
+# Reading source verilog file.
+# copy your verilog file into ./src/ before synthesis.
+read_verilog ./src/${design_name}.v ;
+Loading db file '/home/scf-22/ee577/NCSU45PDK/FreePDK45/osu_soc/lib/files/gscl45nm.db'
+Loading db file '/usr/local/synopsys/Design_Compiler/default/libraries/syn/dw_foundation.sldb'
+Loading db file '/usr/local/synopsys/Design_Compiler/default/libraries/syn/standard.sldb'
+Loading db file '/usr/local/synopsys/Design_Compiler/default/libraries/syn/gtech.db'
+  Loading link library 'gscl45nm'
+  Loading link library 'gtech'
+Loading verilog file '/home/viterbi/08/sihaoc/EE577b/prelab3/src/DW01_add_inst.v'
+Detecting input file type automatically (-rtl or -netlist).
+Opening include file /usr/local/synopsys/Design_Compiler/K-2015.06-SP5-5/dw/sim_ver/DW01_add.v
+Reading with Presto HDL Compiler (equivalent to -rtl option).
+Running PRESTO HDLC
+Compiling source file /home/viterbi/08/sihaoc/EE577b/prelab3/src/DW01_add_inst.v
+Opening include file /usr/local/synopsys/Design_Compiler/K-2015.06-SP5-5/dw/sim_ver/DW01_add.v
+Presto compilation completed successfully.
+Current design is now '/home/viterbi/08/sihaoc/EE577b/prelab3/src/DW01_add.db:DW01_add'
+Warning:  File /home/viterbi/08/sihaoc/EE577b/prelab3/DW01_add-verilog.pvl not found, or does not contain a usable description of DW01_add. (ELAB-320)
+Loaded 2 designs.
+Current design is 'DW01_add'.
+DW01_add DW01_add_inst
+# Inside of read_verilog, for design with parameters, use these two lines below: analyze + elaborate
+analyze -format verilog /usr/local/synopsys/Design_Compiler/K-2015.06-SP5-5/dw/sim_ver/DW01_add.v
+Running PRESTO HDLC
+Compiling source file /usr/local/synopsys/Design_Compiler/K-2015.06-SP5-5/dw/sim_ver/DW01_add.v
+Presto compilation completed successfully.
+1
+elaborate DW01_add
+Running PRESTO HDLC
+Presto compilation completed successfully.
+Elaborated 1 design.
+Current design is now 'DW01_add'.
+1
+# Setting $design_name as current working design.
+# Use this command before setting any constraints.
+current_design $design_name ;
+Current design is 'DW01_add_inst'.
+{DW01_add_inst}
+# If you have multiple instances of the same module,
+# use this so that DesignCompiler optimizes each instance separately.
+uniquify ;
+1
+# Linking your design into the cells in standard cell libraries.
+# This command checks whether your design can be compiled
+link ;
+
+  Linking design 'DW01_add_inst'
+  Using the following designs and libraries:
+  --------------------------------------------------------------------------
+  * (3 designs)               /home/viterbi/08/sihaoc/EE577b/prelab3/src/DW01_add_inst.db, etc
+  gscl45nm (library)          /home/scf-22/ee577/NCSU45PDK/FreePDK45/osu_soc/lib/files/gscl45nm.db
+  dw_foundation.sldb (library) /usr/local/synopsys/Design_Compiler/default/libraries/syn/dw_foundation.sldb
+
+1
+# Create a clock with period of 5.
+create_clock -name clk -period 5.0 -waveform [list 0 2.5] [get_ports clk]
+Warning: Can't find port 'clk' in design 'DW01_add_inst'. (UID-95)
+Error: Value for list 'source_objects' must have 1 elements. (CMD-036)
+0
+# Setting timing constraints for combinational logic.
+# Specifying maximum delay from inputs to outputs
+set_max_delay 5.0 -to [all_outputs];
+1
+set_max_delay 5.0 -from [all_inputs];
+1
+# "check_design" checks the internal representation of the
+# current design for consistency and issues error and
+# warning messages as appropriate.
+check_design > report/$design_name.check_design ;
+# Perforing synthesis and optimization on the current_design.
+compile ;
+Information: Checking out the license 'DesignWare'. (SEC-104)
+Information: Evaluating DesignWare library utilization. (UISN-27)
+
+============================================================================
+| DesignWare Building Block Library  |         Version         | Available |
+============================================================================
+| Basic DW Building Blocks           | K-2015.06-DWBB_201506.5.2
+                                                               |     *     |
+| Licensed DW Building Blocks        | K-2015.06-DWBB_201506.5.2
+                                                               |     *     |
+============================================================================
+
+
+
+  Beginning Pass 1 Mapping
+  ------------------------
+  Processing 'DW01_add_inst'
+
+  Updating timing information
+Information: Updating design information... (UID-85)
+
+  Beginning Implementation Selection
+  ----------------------------------
+  Processing 'DW01_add_inst_DW01_add_0'
+
+  Beginning Mapping Optimizations  (Medium effort)
+  -------------------------------
+
+                                  TOTAL                                      
+   ELAPSED            WORST NEG   SETUP    DESIGN                            
+    TIME      AREA      SLACK     COST    RULE COST         ENDPOINT         
+  --------- --------- --------- --------- --------- -------------------------
+    0:00:00      71.3      0.00       0.0       0.0                          
+    0:00:00      71.3      0.00       0.0       0.0                          
+    0:00:00      71.3      0.00       0.0       0.0                          
+    0:00:00      71.3      0.00       0.0       0.0                          
+    0:00:00      71.3      0.00       0.0       0.0                          
+    0:00:00      71.3      0.00       0.0       0.0                          
+    0:00:00      71.3      0.00       0.0       0.0                          
+    0:00:00      71.3      0.00       0.0       0.0                          
+    0:00:00      71.3      0.00       0.0       0.0                          
+    0:00:00      71.3      0.00       0.0       0.0                          
+    0:00:00      71.3      0.00       0.0       0.0                          
+    0:00:00      71.3      0.00       0.0       0.0                          
+
+
+
+  Beginning Delay Optimization Phase
+  ----------------------------------
+
+                                  TOTAL                                      
+   ELAPSED            WORST NEG   SETUP    DESIGN                            
+    TIME      AREA      SLACK     COST    RULE COST         ENDPOINT         
+  --------- --------- --------- --------- --------- -------------------------
+    0:00:00      71.3      0.00       0.0       0.0                          
+    0:00:00      71.3      0.00       0.0       0.0                          
+    0:00:00      71.3      0.00       0.0       0.0                          
+
+
+  Beginning Area-Recovery Phase  (cleanup)
+  -----------------------------
+
+                                  TOTAL                                      
+   ELAPSED            WORST NEG   SETUP    DESIGN                            
+    TIME      AREA      SLACK     COST    RULE COST         ENDPOINT         
+  --------- --------- --------- --------- --------- -------------------------
+    0:00:00      71.3      0.00       0.0       0.0                          
+    0:00:00      71.3      0.00       0.0       0.0                          
+    0:00:00      71.3      0.00       0.0       0.0                          
+    0:00:00      71.3      0.00       0.0       0.0                          
+    0:00:00      71.3      0.00       0.0       0.0                          
+    0:00:00      71.3      0.00       0.0       0.0                          
+    0:00:00      71.3      0.00       0.0       0.0                          
+    0:00:00      71.3      0.00       0.0       0.0                          
+    0:00:00      71.3      0.00       0.0       0.0                          
+    0:00:00      71.3      0.00       0.0       0.0                          
+    0:00:00      71.3      0.00       0.0       0.0                          
+Loading db file '/home/scf-22/ee577/NCSU45PDK/FreePDK45/osu_soc/lib/files/gscl45nm.db'
+
+
+Note: Symbol # after min delay cost means estimated hold TNS across all active scenarios 
+
+
+  Optimization Complete
+  ---------------------
+1
+# For better synthesis result, use "compile_ultra" command.
+# compile_ultra is doing automatic ungrouping during optimization,
+# therefore sometimes it's hard to figure out the critical path 
+# from the synthesized netlist.
+# So, use "compile" command for now.
+# Writing the synthesis result into Synopsys db format.
+# You can read the saved db file into DesignCompiler later using
+# "read_db" command for further analysis (timing, area...).
+#write -xg_force_db -format db -hierarchy -out db/$design_name.db ;
+# Generating timing and are report of the synthezied design.
+report_timing > report/$design_name.timing ;
+report_area > report/$design_name.area ;
+report_power > report/$design_name.power ;
+# Writing synthesized gate-level verilog netlist.
+# This verilog netlist will be used for post-synthesis gate-level simulation.
+change_names -rules verilog -hierarchy ;
+1
+write -format verilog -hierarchy -out netlist/${design_name}_syn.v ;
+Writing verilog file '/home/viterbi/08/sihaoc/EE577b/prelab3/netlist/DW01_add_inst_syn.v'.
+1
+# Writing Standard Delay Format (SDF) back-annotation file.
+# This delay information can be used for post-synthesis simulation.
+write_sdf netlist/${design_name}_syn.sdf;
+Information: Annotated 'cell' delays are assumed to include load delay. (UID-282)
+Information: Writing timing information to file '/home/viterbi/08/sihaoc/EE577b/prelab3/netlist/DW01_add_inst_syn.sdf'. (WT-3)
+1
+write_sdc netlist/${design_name}_syn.sdc
+1
+1
+dc_shell> quit
+
+Thank you...
+

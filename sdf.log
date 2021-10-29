@@ -1,0 +1,27 @@
+======================================================================
+
+Annotating SDF timing data:
+  Compiled SDF file:     DW01_add_inst_syn.sdf.X
+  Log file:              sdf.log
+  Backannotation scope:  tb_DW01_add_inst_syn.U1
+  Configuration file:    
+  MTM control:           MAXIMUM
+  Scale factors:         1:1:1
+  Scale type:            FROM_MAXIMUM
+
+Time units: 1ns
+
+ncelab: *W,SDFNEP: Unable to annotate to non-existent path (IOPATH (posedge C) YS) of instance tb_DW01_add_inst_syn.U1.U1.U1_1 of module FAX1 <./netlist/DW01_add_inst_syn.sdf, line 69>.
+ncelab: *W,SDFNEP: Unable to annotate to non-existent path (IOPATH (negedge C) YS) of instance tb_DW01_add_inst_syn.U1.U1.U1_1 of module FAX1 <./netlist/DW01_add_inst_syn.sdf, line 70>.
+ncelab: *W,SDFNEP: Unable to annotate to non-existent path (IOPATH (posedge C) YS) of instance tb_DW01_add_inst_syn.U1.U1.U1_2 of module FAX1 <./netlist/DW01_add_inst_syn.sdf, line 84>.
+ncelab: *W,SDFNEP: Unable to annotate to non-existent path (IOPATH (negedge C) YS) of instance tb_DW01_add_inst_syn.U1.U1.U1_2 of module FAX1 <./netlist/DW01_add_inst_syn.sdf, line 85>.
+ncelab: *W,SDFNEP: Unable to annotate to non-existent path (IOPATH (posedge C) YS) of instance tb_DW01_add_inst_syn.U1.U1.U1_3 of module FAX1 <./netlist/DW01_add_inst_syn.sdf, line 99>.
+ncelab: *W,SDFNEP: Unable to annotate to non-existent path (IOPATH (negedge C) YS) of instance tb_DW01_add_inst_syn.U1.U1.U1_3 of module FAX1 <./netlist/DW01_add_inst_syn.sdf, line 100>.
+ncelab: *W,SDFNEP: Unable to annotate to non-existent path (IOPATH (posedge C) YS) of instance tb_DW01_add_inst_syn.U1.U1.U1_4 of module FAX1 <./netlist/DW01_add_inst_syn.sdf, line 114>.
+ncelab: *W,SDFNEP: Unable to annotate to non-existent path (IOPATH (negedge C) YS) of instance tb_DW01_add_inst_syn.U1.U1.U1_4 of module FAX1 <./netlist/DW01_add_inst_syn.sdf, line 115>.
+ncelab: *W,SDFNEP: Unable to annotate to non-existent path (IOPATH (posedge C) YS) of instance tb_DW01_add_inst_syn.U1.U1.U1_5 of module FAX1 <./netlist/DW01_add_inst_syn.sdf, line 129>.
+ncelab: *W,SDFNEP: Unable to annotate to non-existent path (IOPATH (negedge C) YS) of instance tb_DW01_add_inst_syn.U1.U1.U1_5 of module FAX1 <./netlist/DW01_add_inst_syn.sdf, line 130>.
+ncelab: *W,SDFNEP: Unable to annotate to non-existent path (IOPATH (posedge C) YS) of instance tb_DW01_add_inst_syn.U1.U1.U1_6 of module FAX1 <./netlist/DW01_add_inst_syn.sdf, line 144>.
+ncelab: *W,SDFNEP: Unable to annotate to non-existent path (IOPATH (negedge C) YS) of instance tb_DW01_add_inst_syn.U1.U1.U1_6 of module FAX1 <./netlist/DW01_add_inst_syn.sdf, line 145>.
+ncelab: *W,SDFNEP: Unable to annotate to non-existent path (IOPATH (posedge C) YS) of instance tb_DW01_add_inst_syn.U1.U1.U1_7 of module FAX1 <./netlist/DW01_add_inst_syn.sdf, line 159>.
+ncelab: *W,SDFNEP: Unable to annotate to non-existent path (IOPATH (negedge C) YS) of instance tb_DW01_add_inst_syn.U1.U1.U1_7 of module FAX1 <./netlist/DW01_add_inst_syn.sdf, line 160>.

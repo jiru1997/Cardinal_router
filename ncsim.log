@@ -1,0 +1,8 @@
+SUM is :   2
+
+ncsim: *W,RNQUIE: Simulation is complete.
+ncsim> 
+ncsim> ^C
+ncsim> exit
+ncsim: Memory Usage - 38.6M program + 234.0M data = 272.7M total (276.2M Peak)
+ncsim: CPU Usage - 1.3s system + 0.5s user = 1.8s total (90.4s, 2.0% cpu)

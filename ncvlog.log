@@ -1,0 +1,16 @@
+ncvlog(64): 15.20-s079: (c) Copyright 1995-2019 Cadence Design Systems, Inc.
+TOOL:	ncvlog(64)	15.20-s079: Started on Sep 24, 2021 at 00:58:09 PDT
+ncvlog
+    -STATUS
+    -MESSAGES
+    -UPDATE
+    -INCDIR ./include
+    -work work
+    ./tb/tb_DW01_add_inst.v
+
+file: ./tb/tb_DW01_add_inst.v
+	module work.tb_DW01_add_inst
+		errors: 0, warnings: 0
+ncvlog: Memory Usage - 21.4M program + 28.1M data = 49.4M total
+ncvlog: CPU Usage - 0.0s system + 0.0s user = 0.0s total (0.0s, 100.0% cpu)
+TOOL:	ncvlog(64)	15.20-s079: Exiting on Sep 24, 2021 at 00:58:09 PDT  (total: 00:00:00)

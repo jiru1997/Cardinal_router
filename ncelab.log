@@ -1,0 +1,38 @@
+ncelab(64): 15.20-s079: (c) Copyright 1995-2019 Cadence Design Systems, Inc.
+TOOL:	ncelab(64)	15.20-s079: Started on Oct 13, 2021 at 14:04:40 PDT
+ncelab
+    -ACCESS +rwc
+    -NCFATAL INVSUP
+    -NCFATAL CUNOTB
+    -ERRORMAX 5
+    -UPDATE
+    -MESSAGES
+    -TIMESCALE 1ns/10ps
+    -LIBVERBOSE
+    work.tb_router
+
+	Elaborating the design hierarchy:
+Resolving design unit 'router' at 'tb_router.r1'.
+		Caching library 'work' ....... Done
+	library: 'work' views: 'module' -> found
+Resolved design unit 'router' at 'tb_router.r1' to 'work.router:module'.
+Resolving design unit 'cw_input' at 'tb_router.r1@router<module>.cwi'.
+	library: 'work' views: 'module' -> found
+Resolved design unit 'cw_input' at 'tb_router.r1@router<module>.cwi' to 'work.cw_input:module'.
+Resolving design unit 'cw_output' at 'tb_router.r1@router<module>.cwo'.
+	library: 'work' views: 'module' -> found
+Resolved design unit 'cw_output' at 'tb_router.r1@router<module>.cwo' to 'work.cw_output:module'.
+Resolving design unit 'ccw_input' at 'tb_router.r1@router<module>.ccwi'.
+	library: 'work' views: 'module' -> found
+Resolved design unit 'ccw_input' at 'tb_router.r1@router<module>.ccwi' to 'work.ccw_input:module'.
+Resolving design unit 'ccw_output' at 'tb_router.r1@router<module>.ccwo'.
+	library: 'work' views: 'module' -> found
+Resolved design unit 'ccw_output' at 'tb_router.r1@router<module>.ccwo' to 'work.ccw_output:module'.
+Resolving design unit 'pe_input' at 'tb_router.r1@router<module>.pei'.
+	pe_input pei(pesi, peri, pedi, 
+	           |
+ncelab: *E,CUVMUR (./design/router.v,39|12): instance 'tb_router.r1@router<module>.pei' of design unit 'pe_input' is unresolved in 'work.router:module'.
+Resolving design unit 'pe_output' at 'tb_router.r1@router<module>.peo'.
+	library: 'work' views: 'module' -> found
+Resolved design unit 'pe_output' at 'tb_router.r1@router<module>.peo' to 'work.pe_output:module'.
+TOOL:	ncelab(64)	15.20-s079: Exiting on Oct 13, 2021 at 14:04:40 PDT  (total: 00:00:00)
