@@ -179,14 +179,14 @@ module pe_input(pesi, peri, pedi,
 						peri_odd = 1;
 					end*/
 					if (pedi[62]) begin
-						enable_ccw_odd = grant_ccw_odd ? 1:0;
+						enable_ccw_odd = 1;
 						//request_ccw_odd = 1;
 						enable_cw_odd = 0;
 						//request_cw_odd = 0;
 					end else begin
 						enable_ccw_odd = 0;
 						//request_ccw_odd = 0;
-						enable_cw_odd = grant_cw_odd ? 1:0;
+						enable_cw_odd = 1;
 						//request_cw_odd = 1;
 					end
 				end
@@ -269,14 +269,14 @@ module pe_input(pesi, peri, pedi,
 						peri_even = 1;
 					end*/
 					if (pedi[62]) begin
-						enable_ccw_even = grant_ccw_even ? 1:0;
+						enable_ccw_even = 1;
 						//request_ccw_even = 1;
 						enable_cw_even = 0;
 						//request_cw_even = 0;
 					end else begin
 						enable_ccw_even = 0;
 						//request_ccw_even = 0;
-						enable_cw_even = grant_cw_even ? 1:0;
+						enable_cw_even = 1;
 						//request_cw_even = 1;
 					end
 				end
