@@ -22,8 +22,9 @@ module cw_input(cwsi, cwri, cwdi,
 
 	reg cwri_odd, cwri_even;
 	always@(*) begin
-		if (polarity) cwri = cwri_odd;
-		else cwri = cwri_even;
+		//if (polarity) cwri = cwri_odd;
+		//else cwri = cwri_even;
+		cwri = cwri_even * cwri_odd;
 	end
 
 	//buffer data for cw channel
@@ -156,7 +157,7 @@ module cw_input(cwsi, cwri, cwdi,
 						request_cw_odd = 0;
 						cwri_odd = 1;
 					end
-					if (cwsi) begin
+					/*if (cwsi) begin
 						if (cwdi[55:48] == 8'b00000000) begin
 							enable_pe_odd = 1;
 							//request_pe_odd = 1;
@@ -175,6 +176,17 @@ module cw_input(cwsi, cwri, cwdi,
 						enable_cw_odd = 0;
 						//request_cw_odd = 0;
 						cwri_odd = 1;
+					end*/
+					if (cwdi[55:48] == 8'b00000000) begin
+						enable_pe_odd = grant_pe_odd ? 1:0;
+						//request_pe_odd = 1;
+						enable_cw_odd = 0;
+						//request_cw_odd = 0;
+					end else begin
+						enable_pe_odd = 0;
+						//request_pe_odd = 0;
+						enable_cw_odd = grant_cw_odd ? 1:0;
+						//request_cw_odd = 1;
 					end
 				end
 			default : 
@@ -235,7 +247,7 @@ module cw_input(cwsi, cwri, cwdi,
 						request_cw_even = 0;
 						cwri_even = 1;
 					end
-					if (cwsi) begin
+					/*if (cwsi) begin
 						if (cwdi[55:48] == 8'b00000000) begin
 							enable_pe_even = 1;
 							//request_pe_even = 1;
@@ -254,6 +266,17 @@ module cw_input(cwsi, cwri, cwdi,
 						enable_cw_even = 0;
 						//request_cw_even = 0;
 						cwri_even = 1;
+					end*/
+					if (cwdi[55:48] == 8'b00000000) begin
+						enable_pe_even = grant_pe_even ? 1:0;
+						//request_pe_even = 1;
+						enable_cw_even = 0;
+						//request_cw_even = 0;
+					end else begin
+						enable_pe_even = 0;
+						//request_pe_even = 0;
+						enable_cw_even = grant_cw_even ? 1:0;
+						//request_cw_even = 1;
 					end
 				end
 			default : 
