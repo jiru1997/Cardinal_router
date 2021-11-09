@@ -18,52 +18,139 @@ module cw_input(cwsi, cwri, cwdi,
 	output reg [DATA_WIDTH-1:0] data_out_even_cw, data_out_odd_cw, data_out_even_pe, data_out_odd_pe;
 
 	reg [1:0] state_even, state_odd, next_state_even, next_state_odd;
-	reg enable_cw_even, enable_cw_odd, enable_pe_even, enable_pe_odd;
 
 	reg cwri_odd, cwri_even;
-	always@(*) begin
-		if (polarity) cwri = cwri_odd;
-		else cwri = cwri_even;
+	reg enable_cw_even, enable_cw_odd, enable_pe_even, enable_pe_odd;
+
+    
+    reg [63:0] MEM_CW_EVEN[0:7]; 
+    reg [63:0] MEM_CW_ODD[0:7];
+
+    reg[0:7] even_head, even_tail;
+    reg[0:7] odd_head, odd_tail;
+
+    always@(posedge clk) begin
+      if(rst) begin
+        even_head <= 0;
+        even_tail <= 0;
+        odd_head  <= 0;
+        odd_tail  <= 0;      
+      end else if(cwsi & polarity & (odd_tail != 7)) begin
+      	odd_tail  <= odd_tail + 1;
+      	even_tail <= even_tail;
+      	odd_head  <= odd_head;
+      	even_head <= even_head;
+      end else if(cwsi & !polarity & (even_tail != 7)) begin
+      	even_tail <= even_tail + 1;
+      	odd_head  <= odd_head;
+      	even_head <= even_head;
+      	odd_tail  <= odd_tail;
+      end else if((grant_cw_odd | grant_pe_odd) & (state_odd == STATE1)) begin
+      	odd_head  <= odd_head + 1;
+      	even_head <= even_head;
+      	odd_tail  <= odd_tail;
+      	even_tail <= even_tail;
+      end else if((grant_cw_even | grant_pe_even) & (state_even == STATE1)) begin
+      	even_head <= even_head + 1;
+      	odd_tail  <= odd_tail;
+      	even_tail <= even_tail;
+      	odd_head  <= odd_head;
+      end
+      else begin
+      	even_head <= even_head;
+      	odd_tail  <= odd_tail;
+      	even_tail <= even_tail;
+      	odd_head  <= odd_head;
+      end
+    end
+
+    //buffer data for cw channel
+	always@(posedge clk) begin
+		if (cwsi & polarity & (odd_tail != 7)) begin
+			MEM_CW_ODD[odd_tail] <= cwdi;
+		end else begin
+			MEM_CW_ODD[odd_tail] <= MEM_CW_ODD[odd_tail];
+		end
 	end
 
-	//buffer data for cw channel
-	always@(negedge clk) begin
-		if (rst) begin
-			data_out_odd_cw <= 0;
-		end else if (enable_cw_odd) begin
-				data_out_odd_cw <= cwdi;
+	always@(posedge clk) begin
+        if (cwsi & !polarity & (even_tail != 7)) begin
+	        MEM_CW_EVEN[even_tail] <= cwdi;
 		end else begin
-			data_out_odd_cw <= data_out_odd_cw;
+			MEM_CW_EVEN[even_tail] <= MEM_CW_EVEN[even_tail];
 		end
 	end
-	always@(negedge clk) begin
-		if (rst) begin
+
+
+	always@(*) begin
+		//if (polarity) cwri = cwri_odd;
+		//else cwri = cwri_even;
+		cwri = cwri_even & cwri_odd;
+	end
+
+	always@(posedge clk) begin
+		if(rst) begin
+			cwri_odd <=1;
+		end 
+		else if(odd_tail == 7) begin
+			cwri_odd <= 0;
+		end 
+		else begin
+			cwri_odd <= 1;
+		end 
+	end 
+
+	always@(posedge clk) begin
+		if(rst) begin
+			cwri_even <=1;
+		end 
+		else if(even_tail == 7) begin
+			cwri_even <= 0;
+		end 
+		else begin
+			cwri_even <= 1;
+		end 
+	end 
+
+	always@(*) begin
+		if(rst) begin
 			data_out_even_cw <= 0;
-		end else if (enable_cw_even) begin
-				data_out_even_cw <= cwdi;
-		end else begin
-			data_out_even_cw <= data_out_even_cw;
-		end
-	end
-	//buffer data for pe channel
-	always@(negedge clk) begin
-		if (rst) begin
-			data_out_odd_pe <= 0;
-		end else if (enable_pe_odd) begin
-				data_out_odd_pe <= cwdi;
-		end else begin
-			data_out_odd_pe <= data_out_odd_pe;
-		end
-	end
-	always@(negedge clk) begin
-		if (rst) begin
+			data_out_odd_cw  <= 0;
 			data_out_even_pe <= 0;
-		end else if (enable_pe_even) begin
-				data_out_even_pe <= cwdi;
-		end else begin
+			data_out_odd_pe  <= 0;
+		end 
+		else if(request_cw_odd) begin
+			data_out_even_cw <= data_out_even_cw;
+			data_out_odd_cw  <= MEM_CW_ODD[odd_head];
 			data_out_even_pe <= data_out_even_pe;
+			data_out_odd_pe  <= data_out_odd_pe;
+		end 
+		else if(request_pe_odd) begin
+			data_out_even_cw <= data_out_even_cw;
+			data_out_odd_cw  <= data_out_odd_cw;
+			data_out_even_pe <= data_out_even_pe;
+			data_out_odd_pe  <= MEM_CW_ODD[odd_head];
 		end
-	end
+		else if(request_cw_even) begin
+			data_out_even_cw <= MEM_CW_EVEN[even_head];
+			data_out_odd_cw  <= data_out_odd_cw;
+			data_out_even_pe <= data_out_even_pe;
+			data_out_odd_pe  <= data_out_odd_pe;
+		end 
+		else if(request_pe_even) begin
+			data_out_even_cw <= data_out_even_cw;
+			data_out_odd_cw  <= data_out_odd_cw;
+			data_out_even_pe <= MEM_CW_EVEN[even_head];
+			data_out_odd_pe  <= data_out_odd_pe;
+		end 
+	    else begin
+			data_out_even_cw <= data_out_even_cw;
+			data_out_odd_cw  <= data_out_odd_cw;
+			data_out_even_pe <= data_out_even_pe;
+			data_out_odd_pe  <= data_out_odd_pe;
+        end 
+    end
+
 
 	//State transistion
 	always@(posedge clk) begin
@@ -77,11 +164,11 @@ module cw_input(cwsi, cwri, cwdi,
 	end
 
 	// For odd vc, only when cwsi and polarity both asserted, we use two state machines to indicated seperated vc channels
-	always@(state_odd, cwsi, grant_cw_odd, grant_pe_odd) begin
+	always@(state_odd, grant_cw_odd, grant_pe_odd, polarity) begin
 		case(state_odd)
 			STATE0 : 
 				begin
-					if (cwsi & polarity) next_state_odd = STATE1;
+					if ((odd_head != odd_tail) & polarity) next_state_odd = STATE1;
 					else next_state_odd = STATE0;
 				end
 			STATE1 : 
@@ -93,11 +180,11 @@ module cw_input(cwsi, cwri, cwdi,
 		endcase
 	end
 
-	always@(state_even, cwsi, grant_cw_even, grant_pe_even) begin
+	always@(state_even, grant_cw_even, grant_pe_even, polarity) begin
 		case(state_even)
 			STATE0 : 
 				begin
-					if (cwsi & !polarity) next_state_even = STATE1;
+					if ((even_head != even_tail) & !polarity) next_state_even = STATE1;
 					else next_state_even = STATE0;
 				end
 			STATE1 : 
@@ -109,122 +196,71 @@ module cw_input(cwsi, cwri, cwdi,
 		endcase
 	end
 	// As long as cwsi is asserted, generate enable signal for input buffer get packect from cwdi and generate request signal to let output buffer know data is ready 
-	always@(state_odd, cwsi, grant_cw_odd, grant_pe_odd) begin
+	always@(state_odd, grant_cw_odd, grant_pe_odd) begin
 		case(state_odd)
 			STATE0 : 
 				begin
-					if (cwsi & polarity) begin
-						if (cwdi[55:48] == 8'b00000000) begin
-							enable_pe_odd = 1;
+					if ((odd_head != odd_tail) & polarity) begin
+						if (MEM_CW_ODD[odd_head][55:48] == 8'b00000000) begin
 							request_pe_odd = 1;
-							enable_cw_odd = 0;
 							request_cw_odd = 0;
 						end else begin
-							enable_pe_odd = 0;
 							request_pe_odd = 0;
-							enable_cw_odd = 1;
 							request_cw_odd = 1;
 						end
-						cwri_odd = 0;
 					end else begin
-						enable_pe_odd = 0;
 						request_pe_odd = 0;
-						enable_cw_odd = 0;
 						request_cw_odd = 0;
-						cwri_odd = 1;
 					end
 				end
 			STATE1 : 
 				begin
-					if (cwsi | (!grant_cw_odd & !grant_pe_odd)) begin
-						if (cwdi[55:48] == 8'b00000000) begin
-							//enable_pe_odd = 1;
+					if (!grant_cw_odd & !grant_pe_odd) begin
+						if (MEM_CW_ODD[odd_head][55:48] == 8'b00000000) begin
 							request_pe_odd = 1;
-							//enable_cw_odd = 0;
 							request_cw_odd = 0;
 						end else begin
-							//enable_pe_odd = 0;
 							request_pe_odd = 0;
-							//enable_cw_odd = 1;
 							request_cw_odd = 1;
 						end
-						cwri_odd = 0;
 					end else begin
-						//enable_pe_odd = 0;
 						request_pe_odd = 0;
-						//enable_cw_odd = 0;
 						request_cw_odd = 0;
-						cwri_odd = 1;
-					end
-					if (cwsi) begin
-						if (cwdi[55:48] == 8'b00000000) begin
-							enable_pe_odd = 1;
-							//request_pe_odd = 1;
-							enable_cw_odd = 0;
-							//request_cw_odd = 0;
-						end else begin
-							enable_pe_odd = 0;
-							//request_pe_odd = 0;
-							enable_cw_odd = 1;
-							//request_cw_odd = 1;
-						end
-						cwri_odd = 0;
-					end else begin
-						enable_pe_odd = 0;
-						//request_pe_odd = 0;
-						enable_cw_odd = 0;
-						//request_cw_odd = 0;
-						cwri_odd = 1;
 					end
 				end
 			default : 
 				begin
-					enable_pe_odd = 0;
 					request_pe_odd = 0;
-					enable_cw_odd = 0;
 					request_cw_odd = 0;
-					cwri_odd = 1;
 				end
 		endcase
 	end
 
-	always@(state_even, cwsi, grant_pe_even, grant_cw_even) begin
+	always@(state_even, grant_pe_even, grant_cw_even) begin
 		case(state_even)
 			STATE0 : 
 				begin
-					if (cwsi & !polarity) begin
-						if (cwdi[55:48] == 8'b00000000) begin
-							enable_pe_even = 1;
+					if ((even_head != even_tail) & !polarity) begin
+						if (MEM_CW_EVEN[even_head][55:48] == 8'b00000000) begin
 							request_pe_even = 1;
-							enable_cw_even = 0;
 							request_cw_even = 0;
 						end else begin
-							enable_pe_even = 0;
 							request_pe_even = 0;
-							enable_cw_even = 1;
 							request_cw_even = 1;
 						end
-						cwri_even = 0;
 					end else begin
-						enable_pe_even = 0;
 						request_pe_even = 0;
-						enable_cw_even = 0;
 						request_cw_even = 0;
-						cwri_even = 1;
 					end
 				end
 			STATE1 : 
 				begin
-					if (cwsi | (!grant_cw_even & !grant_pe_even)) begin
-						if (cwdi[55:48] == 8'b00000000) begin
-							//enable_pe_even = 1;
+					if (!grant_cw_even & !grant_pe_even) begin
+						if (MEM_CW_EVEN[even_head][55:48] == 8'b00000000) begin
 							request_pe_even = 1;
-							//enable_cw_even = 0;
 							request_cw_even = 0;
 						end else begin
-							//enable_pe_even = 0;
 							request_pe_even = 0;
-							//enable_cw_even = 1;
 							request_cw_even = 1;
 						end
 						cwri_even = 0;
@@ -233,36 +269,12 @@ module cw_input(cwsi, cwri, cwdi,
 						request_pe_even = 0;
 						//enable_cw_even = 0;
 						request_cw_even = 0;
-						cwri_even = 1;
-					end
-					if (cwsi) begin
-						if (cwdi[55:48] == 8'b00000000) begin
-							enable_pe_even = 1;
-							//request_pe_even = 1;
-							enable_cw_even = 0;
-							//request_cw_even = 0;
-						end else begin
-							enable_pe_even = 0;
-							//request_pe_even = 0;
-							enable_cw_even = 1;
-							//request_cw_even = 1;
-						end
-						cwri_even = 0;
-					end else begin
-						enable_pe_even = 0;
-						//request_pe_even = 0;
-						enable_cw_even = 0;
-						//request_cw_even = 0;
-						cwri_even = 1;
 					end
 				end
 			default : 
 				begin
-					enable_pe_even = 0;
 					request_pe_even = 0;
-					enable_cw_even = 0;
 					request_cw_even = 0;
-					cwri_even = 1;
 				end
 		endcase
 	end

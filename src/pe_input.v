@@ -21,8 +21,9 @@ module pe_input(pesi, peri, pedi,
 
 	reg peri_odd, peri_even;
 	always@(*) begin
-		if (polarity) peri = peri_odd;
-		else peri = peri_even;
+		//if (polarity) peri = peri_odd;
+		//else peri = peri_even;
+		peri = peri_even & peri_odd;
 	end
 
 	//buffer data for cw channel
@@ -157,7 +158,7 @@ module pe_input(pesi, peri, pedi,
 						request_cw_odd = 0;
 						peri_odd = 1;
 					end
-					if (pesi) begin
+					/*if (pesi) begin
 						if (pedi[62]) begin
 							enable_ccw_odd = 1;
 							//request_ccw_odd = 1;
@@ -176,6 +177,17 @@ module pe_input(pesi, peri, pedi,
 						enable_cw_odd = 0;
 						//request_cw_odd = 0;
 						peri_odd = 1;
+					end*/
+					if (pedi[62]) begin
+						enable_ccw_odd = 1;
+						//request_ccw_odd = 1;
+						enable_cw_odd = 0;
+						//request_cw_odd = 0;
+					end else begin
+						enable_ccw_odd = 0;
+						//request_ccw_odd = 0;
+						enable_cw_odd = 1;
+						//request_cw_odd = 1;
 					end
 				end
 			default : 
@@ -236,7 +248,7 @@ module pe_input(pesi, peri, pedi,
 						request_cw_even = 0;
 						peri_even = 1;
 					end
-					if (pesi) begin
+					/*if (pesi) begin
 						if (pedi[62]) begin
 							enable_ccw_even = 1;
 							//request_ccw_even = 1;
@@ -255,6 +267,17 @@ module pe_input(pesi, peri, pedi,
 						enable_cw_even = 0;
 						//request_cw_even = 0;
 						peri_even = 1;
+					end*/
+					if (pedi[62]) begin
+						enable_ccw_even = 1;
+						//request_ccw_even = 1;
+						enable_cw_even = 0;
+						//request_cw_even = 0;
+					end else begin
+						enable_ccw_even = 0;
+						//request_ccw_even = 0;
+						enable_cw_even = 1;
+						//request_cw_even = 1;
 					end
 				end
 			default : 

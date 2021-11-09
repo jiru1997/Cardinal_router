@@ -146,7 +146,7 @@ module pe_output(peso, pero, pedo,
 		endcase
 	end
 
-	always@(state_even, request_cw_even, request_ccw_even, rst) begin
+	always@(state_even, request_cw_even, request_ccw_even, rst, pero) begin
 		case(state_even) 
 			STATE0 : 
 				begin
@@ -161,9 +161,9 @@ module pe_output(peso, pero, pedo,
 				end
 			STATE1 : //For cw channel, enable data transfer from input buffer to output buffer and assert grant signal to indicate output buffer got data
 				begin
-					enable1_cw_even = 1;
+					enable1_cw_even = pero ? 1 : 0;
 					enable2_cw_even = 0;
-					grant_cw_even = 1;
+					grant_cw_even = pero ? 1 : 0;
 					enable1_ccw_even = 0;
 					enable2_ccw_even = 0;
 					grant_ccw_even = 0;
@@ -185,9 +185,9 @@ module pe_output(peso, pero, pedo,
 					enable1_cw_even = 0;
 					enable2_cw_even = 0;
 					grant_cw_even = 0;
-					enable1_ccw_even = 1;
+					enable1_ccw_even = pero ? 1 : 0;
 					enable2_ccw_even = 0;
-					grant_ccw_even = 1;
+					grant_ccw_even = pero ? 1 : 0;
 					if (request_cw_even & request_ccw_even) arbi = ~arbi; //Flip arbi signal to change the priority
 					else arbi = arbi;
 				end
@@ -249,7 +249,7 @@ module pe_output(peso, pero, pedo,
 		endcase
 	end
 
-	always@(state_odd, request_cw_odd, request_ccw_odd, rst) begin
+	always@(state_odd, request_cw_odd, request_ccw_odd, rst, pero) begin
 		case(state_odd) 
 			STATE0 : 
 				begin
@@ -264,9 +264,9 @@ module pe_output(peso, pero, pedo,
 				end
 			STATE1 : //For cw channel, enable data transfer from input buffer to output buffer and assert grant signal to indicate output buffer got data
 				begin
-					enable1_cw_odd = 1;
+					enable1_cw_odd = pero ? 1 : 0;
 					enable2_cw_odd = 0;
-					grant_cw_odd = 1;
+					grant_cw_odd = pero ? 1 : 0;
 					enable1_ccw_odd = 0;
 					enable2_ccw_odd = 0;
 					grant_ccw_odd = 0;
@@ -288,9 +288,9 @@ module pe_output(peso, pero, pedo,
 					enable1_cw_odd = 0;
 					enable2_cw_odd = 0;
 					grant_cw_odd = 0;
-					enable1_ccw_odd = 1;
+					enable1_ccw_odd = pero ? 1 : 0;
 					enable2_ccw_odd = 0;
-					grant_ccw_odd = 1;
+					grant_ccw_odd = pero ? 1 : 0;
 					if (request_cw_odd & request_ccw_odd) arbi = ~arbi; //Flip arbi signal to change the priority
 					else arbi = arbi;
 				end

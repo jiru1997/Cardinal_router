@@ -76,22 +76,22 @@ module cw_output(cwso, cwro, cwdo,
 			case({enable2_pe_even,enable2_pe_odd, enable2_cw_even, enable2_cw_odd})
 				4'b1000 : 
 					begin
-						cwdo <= {data_internal_even_pe[63:56], data_internal_even_pe[55:48] - 1'b1, data_internal_even_pe[47:0]}; // Hop value -1
+						cwdo <= {data_internal_even_pe[63:56], data_internal_even_pe[55:48] >> 1, data_internal_even_pe[47:0]}; // Hop value -1
 						cwso <= 1;
 					end
 				4'b0100 : 
 					begin
-						cwdo <= {data_internal_odd_pe[63:56], data_internal_odd_pe[55:48] - 1'b1, data_internal_odd_pe[47:0]}; // Hop value -1
+						cwdo <= {data_internal_odd_pe[63:56], data_internal_odd_pe[55:48] >> 1, data_internal_odd_pe[47:0]}; // Hop value -1
 						cwso <= 1;
 					end
 				4'b0010 : 
 					begin
-						cwdo <= {data_internal_even_cw[63:56], data_internal_even_cw[55:48] - 1'b1, data_internal_even_cw[47:0]}; // Hop value -1
+						cwdo <= {data_internal_even_cw[63:56], data_internal_even_cw[55:48] >> 1, data_internal_even_cw[47:0]}; // Hop value -1
 						cwso <= 1;
 					end
 				4'b0001 : 
 					begin
-						cwdo <= {data_internal_odd_cw[63:56], data_internal_odd_cw[55:48] - 1'b1, data_internal_odd_cw[47:0]}; // Hop value -1
+						cwdo <= {data_internal_odd_cw[63:56], data_internal_odd_cw[55:48] >> 1, data_internal_odd_cw[47:0]}; // Hop value -1
 						cwso <= 1;
 					end
 				default : 
@@ -148,7 +148,7 @@ module cw_output(cwso, cwro, cwdo,
 		endcase
 	end
 
-	always@(state_even, request_cw_even, request_pe_even, rst) begin
+	always@(state_even, request_cw_even, request_pe_even, rst, cwro) begin
 		case(state_even) 
 			STATE0 : 
 				begin
@@ -163,9 +163,9 @@ module cw_output(cwso, cwro, cwdo,
 				end
 			STATE1 : //For cw channel, enable data transfer from input buffer to output buffer and assert grant signal to indicate output buffer got data
 				begin
-					enable1_cw_even = 1;
+					enable1_cw_even = cwro ? 1:0;
 					enable2_cw_even = 0;
-					grant_cw_even = 1;
+					grant_cw_even = cwro ? 1:0;
 					enable1_pe_even = 0;
 					enable2_pe_even = 0;
 					grant_pe_even = 0;
@@ -187,9 +187,9 @@ module cw_output(cwso, cwro, cwdo,
 					enable1_cw_even = 0;
 					enable2_cw_even = 0;
 					grant_cw_even = 0;
-					enable1_pe_even = 1;
+					enable1_pe_even = cwro ? 1:0;
 					enable2_pe_even = 0;
-					grant_pe_even = 1;
+					grant_pe_even = cwro ? 1:0;
 					if (request_cw_even & request_pe_even) arbi = ~arbi; //Flip arbi signal to change the priority
 					else arbi = arbi;
 				end
@@ -251,7 +251,7 @@ module cw_output(cwso, cwro, cwdo,
 		endcase
 	end
 
-	always@(state_odd, request_cw_odd, request_pe_odd, rst) begin
+	always@(state_odd, request_cw_odd, request_pe_odd, rst, cwro) begin
 		case(state_odd) 
 			STATE0 : 
 				begin
@@ -266,9 +266,9 @@ module cw_output(cwso, cwro, cwdo,
 				end
 			STATE1 : //For cw channel, enable data transfer from input buffer to output buffer and assert grant signal to indicate output buffer got data
 				begin
-					enable1_cw_odd = 1;
+					enable1_cw_odd = cwro ? 1:0;
 					enable2_cw_odd = 0;
-					grant_cw_odd = 1;
+					grant_cw_odd = cwro ? 1:0;
 					enable1_pe_odd = 0;
 					enable2_pe_odd = 0;
 					grant_pe_odd = 0;
@@ -290,9 +290,9 @@ module cw_output(cwso, cwro, cwdo,
 					enable1_cw_odd = 0;
 					enable2_cw_odd = 0;
 					grant_cw_odd = 0;
-					enable1_pe_odd = 1;
+					enable1_pe_odd = cwro ? 1:0;
 					enable2_pe_odd = 0;
-					grant_pe_odd = 1;
+					grant_pe_odd = cwro ? 1:0;
 					if (request_cw_odd & request_pe_odd) arbi = ~arbi; //Flip arbi signal to change the priority
 					else arbi = arbi;
 				end
