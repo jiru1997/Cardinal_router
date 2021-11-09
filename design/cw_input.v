@@ -20,18 +20,14 @@ module cw_input(cwsi, cwri, cwdi,
 	reg [1:0] state_even, state_odd, next_state_even, next_state_odd;
 
 	reg cwri_odd, cwri_even;
-
-	reg [1:0] state_even_receive, state_odd_receive, next_state_even_receive, next_state_odd_receive;
 	reg enable_cw_even, enable_cw_odd, enable_pe_even, enable_pe_odd;
 
     
-    reg [63:0] MEM_CW_EVEN[0:255]; 
-    reg [63:0] MEM_CW_ODD[0:255];
+    reg [63:0] MEM_CW_EVEN[0:7]; 
+    reg [63:0] MEM_CW_ODD[0:7];
 
     reg[0:7] even_head, even_tail;
     reg[0:7] odd_head, odd_tail;
-//    reg pe_even_tail, pe_even_head;
-//    reg pe_odd_head, pe_odd_tail;
 
     always@(posedge clk) begin
       if(rst) begin
@@ -39,20 +35,38 @@ module cw_input(cwsi, cwri, cwdi,
         even_tail <= 0;
         odd_head  <= 0;
         odd_tail  <= 0;      
-      end else if(cwsi & polarity & (odd_tail != 254)) begin
-      	odd_tail <= odd_tail + 1;
-      end else if(cwsi & !polarity & (even_tail != 254)) begin
+      end else if(cwsi & polarity & (odd_tail != 7)) begin
+      	odd_tail  <= odd_tail + 1;
+      	even_tail <= even_tail;
+      	odd_head  <= odd_head;
+      	even_head <= even_head;
+      end else if(cwsi & !polarity & (even_tail != 7)) begin
       	even_tail <= even_tail + 1;
+      	odd_head  <= odd_head;
+      	even_head <= even_head;
+      	odd_tail  <= odd_tail;
       end else if((grant_cw_odd | grant_pe_odd) & (state_odd == STATE1)) begin
-      	odd_head <= odd_head + 1;
+      	odd_head  <= odd_head + 1;
+      	even_head <= even_head;
+      	odd_tail  <= odd_tail;
+      	even_tail <= even_tail;
       end else if((grant_cw_even | grant_pe_even) & (state_even == STATE1)) begin
       	even_head <= even_head + 1;
+      	odd_tail  <= odd_tail;
+      	even_tail <= even_tail;
+      	odd_head  <= odd_head;
+      end
+      else begin
+      	even_head <= even_head;
+      	odd_tail  <= odd_tail;
+      	even_tail <= even_tail;
+      	odd_head  <= odd_head;
       end
     end
 
     //buffer data for cw channel
 	always@(posedge clk) begin
-		if (cwsi & polarity & (odd_tail != 254)) begin
+		if (cwsi & polarity & (odd_tail != 7)) begin
 			MEM_CW_ODD[odd_tail] <= cwdi;
 		end else begin
 			MEM_CW_ODD[odd_tail] <= MEM_CW_ODD[odd_tail];
@@ -60,7 +74,7 @@ module cw_input(cwsi, cwri, cwdi,
 	end
 
 	always@(posedge clk) begin
-        if (cwsi & !polarity & (even_tail != 254)) begin
+        if (cwsi & !polarity & (even_tail != 7)) begin
 	        MEM_CW_EVEN[even_tail] <= cwdi;
 		end else begin
 			MEM_CW_EVEN[even_tail] <= MEM_CW_EVEN[even_tail];
@@ -78,7 +92,7 @@ module cw_input(cwsi, cwri, cwdi,
 		if(rst) begin
 			cwri_odd <=1;
 		end 
-		else if(odd_tail == 254) begin
+		else if(odd_tail == 7) begin
 			cwri_odd <= 0;
 		end 
 		else begin
@@ -90,7 +104,7 @@ module cw_input(cwsi, cwri, cwdi,
 		if(rst) begin
 			cwri_even <=1;
 		end 
-		else if(even_tail == 254) begin
+		else if(even_tail == 7) begin
 			cwri_even <= 0;
 		end 
 		else begin

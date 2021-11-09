@@ -20,18 +20,14 @@ module ccw_input(ccwsi, ccwri, ccwdi,
 	reg [1:0] state_even, state_odd, next_state_even, next_state_odd;
 
 	reg ccwri_odd, ccwri_even;
-
-	reg [1:0] state_even_receive, state_odd_receive, next_state_even_receive, next_state_odd_receive;
 	reg enable_ccw_even, enable_ccw_odd, enable_pe_even, enable_pe_odd;
 
     
-    reg [63:0] MEM_ccw_EVEN[0:255]; 
-    reg [63:0] MEM_ccw_ODD[0:255];
+    reg [63:0] MEM_ccw_EVEN[0:7]; 
+    reg [63:0] MEM_ccw_ODD[0:7];
 
-    reg[0:7] even_head, even_tail;
-    reg[0:7] odd_head, odd_tail;
-//    reg pe_even_tail, pe_even_head;
-//    reg pe_odd_head, pe_odd_tail;
+    reg[0:2] even_head, even_tail;
+    reg[0:2] odd_head, odd_tail;
 
     always@(posedge clk) begin
       if(rst) begin
@@ -39,20 +35,38 @@ module ccw_input(ccwsi, ccwri, ccwdi,
         even_tail <= 0;
         odd_head  <= 0;
         odd_tail  <= 0;      
-      end else if(ccwsi & polarity & (odd_tail != 254)) begin
-      	odd_tail <= odd_tail + 1;
-      end else if(ccwsi & !polarity & (even_tail != 254)) begin
+      end else if(ccwsi & polarity & (odd_tail != 7)) begin
+      	odd_tail  <= odd_tail + 1;
+      	even_tail <= even_tail;
+      	odd_head  <= odd_head;
+      	even_head <= even_head;
+      end else if(ccwsi & !polarity & (even_tail != 7)) begin
       	even_tail <= even_tail + 1;
+      	odd_head  <= odd_head;
+      	even_head <= even_head;
+      	odd_tail  <= odd_tail;
       end else if((grant_ccw_odd | grant_pe_odd) & (state_odd == STATE1)) begin
-      	odd_head <= odd_head + 1;
+      	odd_head  <= odd_head + 1;
+      	even_head <= even_head;
+      	odd_tail  <= odd_tail;
+      	even_tail <= even_tail;
       end else if((grant_ccw_even | grant_pe_even) & (state_even == STATE1)) begin
       	even_head <= even_head + 1;
+      	odd_tail  <= odd_tail;
+      	even_tail <= even_tail;
+      	odd_head  <= odd_head;
+      end
+      else begin
+      	even_head <= even_head;
+      	odd_tail  <= odd_tail;
+      	even_tail <= even_tail;
+      	odd_head  <= odd_head;
       end
     end
 
     //buffer data for ccw channel
 	always@(posedge clk) begin
-		if (ccwsi & polarity & (odd_tail != 254)) begin
+		if (ccwsi & polarity & (odd_tail != 7)) begin
 			MEM_ccw_ODD[odd_tail] <= ccwdi;
 		end else begin
 			MEM_ccw_ODD[odd_tail] <= MEM_ccw_ODD[odd_tail];
@@ -60,7 +74,7 @@ module ccw_input(ccwsi, ccwri, ccwdi,
 	end
 
 	always@(posedge clk) begin
-        if (ccwsi & !polarity & (even_tail != 254)) begin
+        if (ccwsi & !polarity & (even_tail != 7)) begin
 	        MEM_ccw_EVEN[even_tail] <= ccwdi;
 		end else begin
 			MEM_ccw_EVEN[even_tail] <= MEM_ccw_EVEN[even_tail];
@@ -78,7 +92,7 @@ module ccw_input(ccwsi, ccwri, ccwdi,
 		if(rst) begin
 			ccwri_odd <=1;
 		end 
-		else if(odd_tail == 254) begin
+		else if(odd_tail == 7) begin
 			ccwri_odd <= 0;
 		end 
 		else begin
@@ -90,7 +104,7 @@ module ccw_input(ccwsi, ccwri, ccwdi,
 		if(rst) begin
 			ccwri_even <=1;
 		end 
-		else if(even_tail == 254) begin
+		else if(even_tail == 7) begin
 			ccwri_even <= 0;
 		end 
 		else begin
